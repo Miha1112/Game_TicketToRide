@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.game.controller.GameBoardController">
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <Menu mnemonicParsing="false" text="File">
+                <MenuItem mnemonicParsing="false" onAction="#serializeGame" text="Save Game" />
+            <MenuItem mnemonicParsing="false" onAction="#deserializeGame" text="Load  Game" />
+                <MenuItem mnemonicParsing="false" onAction="#startGame" text="Start Game" />
+            <MenuItem mnemonicParsing="false" text="Close" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+                <MenuItem mnemonicParsing="false" text="Delete" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+                <MenuItem mnemonicParsing="false" text="About" />
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <center>
+        <StackPane alignment="TOP_LEFT">
+
+            <VBox alignment="TOP_LEFT" spacing="10">
+                <!-- Player turn and color indicator -->
+                <ImageView fx:id="DestinationCardImageView" fitWidth="100" preserveRatio="true" />
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="playerTurnLabel" text="Player's Turn:">
+                  <font>
+                     <Font size="16.0" />
+                  </font>
+                  <effect>
+                     <Glow />
+                  </effect></Label>
+                    <Circle fx:id="playerIndicator" radius="10" visible="false" />
+                </HBox>
+                <!-- Game grid and side image view -->
+                <HBox spacing="10">
+                    <GridPane fx:id="mainGrid" hgap="8" maxHeight="Infinity" maxWidth="Infinity" vgap="8">
+
+                    </GridPane>
+                    <!-- Row  0 -->
+
+                    <VBox spacing="30">
+                        <Button fx:id="switchTurnButton" onAction="#handleSwitchTurn" prefWidth="200" text="Switch Turn" />
+                        <Button fx:id="btnClaimRoute" onAction="#handleClaimRoute" prefWidth="200" text="Claim Route" />
+                        <HBox alignment="CENTER_LEFT" spacing="10"> <!-- Outer HBox for horizontal alignment -->
+                            <ImageView fx:id="destinationCard" fitWidth="200" preserveRatio="true" />
+
+                            <!-- Inner HBox for the route color indicator and label -->
+                            <HBox alignment="CENTER_LEFT" spacing="5">
+                                <Circle fx:id="routeColorIndicator" radius="10" visible="false" />
+                                <Label text="Route Color" />
+                            </HBox>
+                        </HBox>
+                    <StackPane alignment="BOTTOM_CENTER">
+                        <GridPane fx:id="trainCardsImageView" hgap="8" maxHeight="Infinity" maxWidth="Infinity" vgap="8">
+
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                        </GridPane>
+                    </StackPane>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </center>
+</BorderPane>
