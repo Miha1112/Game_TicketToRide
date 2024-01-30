@@ -1,5 +1,7 @@
 package hr.algebra.game.model;
 
+import hr.algebra.game.controller.GameBoardController;
+import hr.algebra.game.view.CityRenderer;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -9,16 +11,32 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import lombok.Getter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
-import hr.algebra.game.view.CityRenderer;
+import java.util.Objects;
+
 public final class GameBoard {
 
-    private static final double INNER_SQUARE_SIZE = Constants.INNER_SQUARE_SIZE;
-    private static final double OUTER_SQUARE_SIZE = Constants.OUTER_SQUARE_SIZE;
+    public static final double INNER_SQUARE_SIZE = Constants.INNER_SQUARE_SIZE;
+    public static final double OUTER_SQUARE_SIZE = Constants.OUTER_SQUARE_SIZE;
 
     private final Routes routes;
-    private final GridPane mainGrid;
+    @Getter
+    public static GridPane mainGrid = null;
+    private final GameBoardController gameBoardController;
 
 
     public void setGame(Game game) {
@@ -29,8 +47,9 @@ public final class GameBoard {
     private Game game;
 
     private final CityRenderer cityRenderer = new CityRenderer();
-    public GameBoard(GridPane mainGrid, Game game) {
+    public GameBoard(GridPane mainGrid, GameBoardController gameBoardController, Game game) {
         this.mainGrid = mainGrid;
+        this.gameBoardController = gameBoardController;
         this.game = game;
         this.routes = new Routes(this);
 
@@ -103,8 +122,6 @@ public final class GameBoard {
         Text text = new Text(content);
         text.setTextAlignment(TextAlignment.CENTER);
         text.setFont(Font.font(OUTER_SQUARE_SIZE / 2));
-
-
         return text;
     }
 
@@ -156,27 +173,106 @@ public final class GameBoard {
     }
 
     public void highlightSquare(int x, int y, Color color) {
-
         Rectangle square = (Rectangle) getNodeFromGridPane(mainGrid, x, y);
         if (square != null) {
             square.setFill(color);
+
+
         }
     }
 
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+    public void setToRoutePlayerColor(Color color,Route route){
+
+        int[][] path = route.getRoutePath();
+        if (path!= null){
+            for (int[] coords : path){
+                Rectangle square = (Rectangle) getNodeFromGridPane(mainGrid, coords[0], coords[1]);
+                if (square!= null){
+                    square.setFill(color);
+                }
+            }
+        }
+
+    }
+
+    public Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
                 return node;
             }
         }
-
-
-
         return null;
     }
+    public void exportToXML(String filePath) {
+        try {
+            XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
+            XMLStreamWriter xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(new FileWriter(filePath));
 
+            xmlStreamWriter.writeStartDocument();
+            xmlStreamWriter.writeStartElement("gameBoard");
 
+            exportSquaresToXML(xmlStreamWriter);
 
+            exportCitiesToXML(xmlStreamWriter);
 
+            xmlStreamWriter.writeEndElement();
+            xmlStreamWriter.writeEndDocument();
 
+            xmlStreamWriter.close();
+        } catch (IOException | XMLStreamException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void exportSquaresToXML(XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+        for (Node node : mainGrid.getChildren()) {
+            if (node instanceof Rectangle) {
+                Rectangle square = (Rectangle) node;
+                int col = GridPane.getColumnIndex(node);
+                int row = GridPane.getRowIndex(node);
+
+                xmlStreamWriter.writeStartElement("square");
+                xmlStreamWriter.writeAttribute("col", String.valueOf(col));
+                xmlStreamWriter.writeAttribute("row", String.valueOf(row));
+                xmlStreamWriter.writeAttribute("color", square.getFill().toString());
+                xmlStreamWriter.writeEndElement();
+            }
+        }
+    }
+
+    private void exportCitiesToXML(XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+    }
+
+    public void importFromXML(String filePath) {
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(filePath);
+
+            NodeList squareNodes = doc.getElementsByTagName("square");
+            importSquaresFromXML(squareNodes);
+
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void importSquaresFromXML(NodeList squareNodes) {
+        for (int i = 0; i < squareNodes.getLength(); i++) {
+            if (squareNodes.item(i).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                Element squareElement = (Element) squareNodes.item(i);
+                int col = Integer.parseInt(squareElement.getAttribute("col"));
+                int row = Integer.parseInt(squareElement.getAttribute("row"));
+                String color = squareElement.getAttribute("color");
+                applySquareData(col, row, color);
+            }
+        }
+    }
+
+    private void applySquareData(int col, int row, String color) {
+        Rectangle square = (Rectangle) getNodeFromGridPane(mainGrid, col, row);
+        if (square != null) {
+            square.setFill(Color.valueOf(color));
+        }
+    }
 }

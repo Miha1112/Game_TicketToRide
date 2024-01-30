@@ -20,7 +20,7 @@ public class PlayerHelper {
     public static Player createPlayer(GameBoardController gameBoardController) {
         // Assign a random color to the player and remove it from the available list
         PlayerColor color = assignRandomColor();
-        return new Player(color, gameBoardController); // Assuming Player constructor accepts a PlayerColor
+        return new Player(color); // Assuming Player constructor accepts a PlayerColor
     }
     private static PlayerColor assignRandomColor() {
         if (availableColors.isEmpty()) {

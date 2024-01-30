@@ -156,6 +156,9 @@ public class Routes {
             highlightRoute(path, color);
         }
     }
+    public static int[][] getRoutePath(Route route){
+        return routePaths.get(route);
+    }
     public static int getPoints(Route route) {
         // Returns the length of the route path, which represents the points.
         return routePaths.containsKey(route) ? routePaths.get(route).length : 0;

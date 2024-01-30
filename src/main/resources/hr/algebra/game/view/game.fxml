@@ -17,6 +17,10 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.collections.FXCollections?>
+<?import java.net.URL?>
 <BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.game.controller.GameBoardController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
@@ -24,7 +28,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#serializeGame" text="Save Game" />
             <MenuItem mnemonicParsing="false" onAction="#deserializeGame" text="Load  Game" />
                 <MenuItem mnemonicParsing="false" onAction="#startGame" text="Start Game" />
-            <MenuItem mnemonicParsing="false" text="Close" />
+            <MenuItem mnemonicParsing="false" onAction="#closeGame" text="Close" />
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                 <MenuItem mnemonicParsing="false" text="Delete" />
@@ -59,13 +63,11 @@
 
                     </GridPane>
                     <!-- Row  0 -->
-
                     <VBox spacing="30">
                         <Button fx:id="switchTurnButton" onAction="#handleSwitchTurn" prefWidth="200" text="Switch Turn" />
                         <Button fx:id="btnClaimRoute" onAction="#handleClaimRoute" prefWidth="200" text="Claim Route" />
                         <HBox alignment="CENTER_LEFT" spacing="10"> <!-- Outer HBox for horizontal alignment -->
                             <ImageView fx:id="destinationCard" fitWidth="200" preserveRatio="true" />
-
                             <!-- Inner HBox for the route color indicator and label -->
                             <HBox alignment="CENTER_LEFT" spacing="5">
                                 <Circle fx:id="routeColorIndicator" radius="10" visible="false" />
@@ -88,6 +90,23 @@
                             </rowConstraints>
                         </GridPane>
                     </StackPane>
+                    </VBox>
+                    <VBox spacing="10"  alignment="CENTER">
+                        <ListView fx:id="chatListView" prefWidth="200" prefHeight="400">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList" >
+                                    <!-- Пустий список, оскільки дані будуть додаватись динамічно з контроллера -->
+                                </FXCollections>
+                            </items>
+                            <stylesheets>
+                                <URL value="@game.css" />
+                            </stylesheets>
+                        </ListView>
+
+                        <HBox spacing="5">
+                            <TextArea fx:id="messageInputTextArea" prefWidth="100" prefHeight="30" wrapText="true" />
+                            <Button onAction="#sendMessage" text="Send" />
+                        </HBox>
                     </VBox>
                 </HBox>
             </VBox>

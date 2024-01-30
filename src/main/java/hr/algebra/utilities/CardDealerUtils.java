@@ -11,19 +11,18 @@ public class CardDealerUtils {
 
     // Method to always draw two train cards
     public static void drawAndSetTrainCard(Player player) {
-
         for (int i = 0; i < 2; i++) {
             TrainCard drawnCard = TrainCardHelper.drawCard();
             player.drawTrainCard(drawnCard);
             // Set the card on the board without a destination card
-            player.setCard(drawnCard, player.getLatestDestinationCard());
+            GameHelper.getGameBoardController().setCard(drawnCard, player.getLatestDestinationCard(),player);
         }
     }
     public static void drawAndSetDestinationCard(Player player) {
         DestinationCard drawnDestinationCard = DestinationCardHelper.drawCard();
         player.drawDestinationCard(drawnDestinationCard);
             // Set the card on the board without a destination card
-        player.setCard(null, drawnDestinationCard);
+        GameHelper.getGameBoardController().setCard(null, drawnDestinationCard, player);
         GameHelper.getGameBoardController().updateRouteColorIndicator();
 
     }
@@ -53,11 +52,11 @@ public class CardDealerUtils {
 
             System.out.println(nextPlayer);
 
-        switchTurns();
+        //switchTurns();
     }
-    public static void switchTurns(){
-        GameHelper.getGameBoardController().enableSwitchTurnButton();
-    }
+//    //public static void switchTurns(){
+//        GameHelper.getGameBoardController().enableSwitchTurnButton();
+//    }
 
 
     private static void handleMaxCardLimit(Player player) {
