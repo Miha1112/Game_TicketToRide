@@ -1,24 +1,25 @@
 package hr.algebra.game.model;
 
 import hr.algebra.game.controller.GameBoardController;
-import javafx.application.Platform;
-import javafx.scene.image.Image;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Objects;
-
+@Getter
+@Setter
 public final class Player implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private PlayerColor color;
+    private Long id;
+    private Long roomId;
     private ArrayList<DestinationCard> destinationCards;
     private ArrayList<TrainCard> trainCards; // Player's hand of train cards
     private TrainCard[][] trainCardGrid; // Grid of drawn cards
     private GameBoardController gameBoardController;
     private int score;
-
 
     public Player(PlayerColor color, GameBoardController gameBoardController) {
         this.color = color;
@@ -34,6 +35,33 @@ public final class Player implements Serializable {
         }
         System.out.println();
     }
+    public static void resetPlayerCards(Player player, GameBoardController gameBoardController) {
+        // Очищення карт у руці гравця
+        player.getTrainCards().clear();
+
+        // Оновлення trainCardGrid ініціалізацією нових TrainCard з коліром EMPTY
+        for (int i = 0; i < player.getTrainCardGrid().length; i++) {
+            for (int j = 0; j < player.getTrainCardGrid()[i].length; j++) {
+                player.getTrainCardGrid()[i][j] = new TrainCard(RouteColor.EMPTY);
+
+                // Оновлення інтерфейсу
+                gameBoardController.updateCardOnBoard(new TrainCard(RouteColor.EMPTY), i, j);
+            }
+        }
+    }
+    public void drawTrainCardsRemove(TrainCard card) {
+        trainCards.remove(card);
+        for (int row = 0; row < trainCardGrid.length; row++) {
+            for (int col = 0; col < trainCardGrid[row].length; col++) {
+                if (trainCardGrid[row][col] == card) {
+                    trainCardGrid[row][col] = new TrainCard(RouteColor.EMPTY);
+                    gameBoardController.updateCardOnBoard(null, row, col);
+                    return;
+                }
+            }
+        }
+    }
+
 
     public void setCard(TrainCard card,DestinationCard destinationCard) {
         int[] nextPosition = findNextAvailablePosition();
@@ -45,10 +73,14 @@ public final class Player implements Serializable {
                 trainCardGrid[row][col] = card;
                 gameBoardController.updateCardOnBoard(card, row, col);
             }
-
             if (destinationCard != null ) {
                 gameBoardController.updateDestinationCardOnBoard(destinationCard);
             }
+        }
+    }
+    public void setNextDestinationCard(){
+        if (destinationCards.size() >1) {
+            destinationCards.removeLast();
         }
     }
 
@@ -93,12 +125,6 @@ public final class Player implements Serializable {
         trainCards.add(card);
     }
 
-
-    public PlayerColor getColor() {
-        return color;
-    }
-
-
     public ArrayList<DestinationCard> getDestinationCardsHand() {
         return new ArrayList<>(destinationCards);
     }
@@ -111,9 +137,14 @@ public final class Player implements Serializable {
     public void addScore(int points) {
         score += points;
     }
-
-    public int getScore() {
-        return score;
+    public DestinationCard getNextDestinationCard() {
+        if (!destinationCards.isEmpty()) {
+            int index = destinationCards.size() - 1;
+            DestinationCard nextCard = destinationCards.get(index);
+            destinationCards.remove(index);
+            return nextCard;
+        }
+        return null;
     }
 
     @Override
@@ -125,4 +156,5 @@ public final class Player implements Serializable {
                 ", score=" + score +
                 '}';
     }
+
 }

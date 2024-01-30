@@ -1,11 +1,16 @@
 package hr.algebra.game.model;
 
 
+import javafx.scene.paint.Color;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+@Getter
+@Setter
 public class Game implements Serializable {
     @Serial
     private static final long serialVersionUID=4L;
@@ -13,6 +18,18 @@ public class Game implements Serializable {
     private List<Player> players;
     private int currentPlayerIndex;
     private int turnCounter = 0;
+
+    @Getter
+    @Setter
+    private static Long gameId;
+    @Getter
+    @Setter
+    private static Long gameRoomId;
+
+    @Getter
+    @Setter
+    private static Color gameColor;
+
 
     public void incrementTurnCounter() {
         turnCounter++;
@@ -62,10 +79,8 @@ public class Game implements Serializable {
 
     public Player getCurrentPlayer() {
         if (players.isEmpty()) {
-            throw new IllegalStateException("No players are set for the game");
+            throw new IllegalStateException("No players are set for the game "+ players.size());
         }
-
-
         return players.get(currentPlayerIndex);
     }
 

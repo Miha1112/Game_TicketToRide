@@ -11,7 +11,6 @@ public class CardDealerUtils {
 
     // Method to always draw two train cards
     public static void drawAndSetTrainCard(Player player) {
-
         for (int i = 0; i < 2; i++) {
             TrainCard drawnCard = TrainCardHelper.drawCard();
             player.drawTrainCard(drawnCard);
